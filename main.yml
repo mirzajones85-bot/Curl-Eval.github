@@ -2,14 +2,8 @@ name: SecDim
 
 on: pull_request
 
-permissions:
-  contents: read
-
 jobs:
   secdim:
-    # Only run this job when the PR comes from the same repository (not a fork).
-    # This avoids running potentially risky steps for untrusted forked PRs.
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
 
     steps:
@@ -21,23 +15,14 @@ jobs:
           set -euo pipefail
           URL="https://secdim.com/assets/images/logo.svg"
           OUT="secdim-logo.svg"
-
-          # Use safe curl flags: fail on HTTP errors, follow redirects, limit redirects, retry transient failures
-          curl --fail --show-error --location --max-redirs 3 --retry 3 --retry-delay 2 --output "$OUT" "$URL"
+          # Use safe curl flags, don't execute remote content
+          curl --fail --show-error --location --max-redirs 3 --retry 3 --retry-delay 2 --silent --output "$OUT" "$URL"
 
           # Basic sanity check: ensure it contains an <svg> tag before doing anything with it
-          if ! grep -q -m1 -i '<svg' "$OUT"; then
+          if ! grep -q -m1 '<svg' "$OUT"; then
             echo "Error: downloaded file does not appear to be an SVG" >&2
             rm -f "$OUT"
             exit 1
           fi
 
           echo "Downloaded and validated $OUT"
-
-      - name: Inspect downloaded logo (safe)
-        run: |
-          # If you need to inspect or use the file, do so without executing it.
-          echo "Logo size:"
-          wc -c secdim-logo.svg || true
-          echo "Preview (first 50 lines):"
-          head -n 50 secdim-logo.svg || true
