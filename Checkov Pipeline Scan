@@ -1,0 +1,19 @@
+name: Checkov Pipeline Scan
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Checkov on GitHub Actions workflows
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: github_actions
